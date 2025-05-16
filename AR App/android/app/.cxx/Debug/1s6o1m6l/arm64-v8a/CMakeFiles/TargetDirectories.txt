@@ -1,0 +1,2 @@
+E:/Softwares/Setups/Unity/Project/AR App 2/AR App/android/app/.cxx/Debug/1s6o1m6l/arm64-v8a/CMakeFiles/edit_cache.dir
+E:/Softwares/Setups/Unity/Project/AR App 2/AR App/android/app/.cxx/Debug/1s6o1m6l/arm64-v8a/CMakeFiles/rebuild_cache.dir

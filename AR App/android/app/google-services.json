@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "579126736241",
+    "project_id": "arinterior-ea12f",
+    "storage_bucket": "arinterior-ea12f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579126736241:android:76b35382b752ebf97b32d0",
+        "android_client_info": {
+          "package_name": "com.example.ar_home_decoration"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUDEDae9DqKzhRduGpEngFzTxUncnBBYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

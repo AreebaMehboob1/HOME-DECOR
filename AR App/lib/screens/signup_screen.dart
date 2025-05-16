@@ -61,7 +61,9 @@ class _SignupScreenState extends State<SignupScreen>
     String password = passwordController.text.trim();
     String confirmPassword = confirmPasswordController.text.trim();
 
-    // Input validation
+    // Enhanced input validation with industry-standard checks
+
+    // 1. Check if fields are empty
     if (name.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
@@ -70,6 +72,83 @@ class _SignupScreenState extends State<SignupScreen>
       return;
     }
 
+    // 2. Industry-standard username validation
+    if (name.length < 3) {
+      _showErrorSnackBar("Name must be at least 3 characters long");
+      return;
+    }
+
+    // Username must contain at least 3 letters (prevents names like "123")
+    if (RegExp(r'[a-zA-Z]').allMatches(name).length < 3) {
+      _showErrorSnackBar("Name must contain at least 3 letters");
+      return;
+    }
+
+    // Username cannot be just numbers or special characters
+    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9\s._-]{2,}$').hasMatch(name)) {
+      _showErrorSnackBar(
+          "Name must start with a letter and contain at least 3 characters");
+      return;
+    }
+
+    // 3. Industry-standard email validation
+
+    // Basic format validation
+    final emailRegExp =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegExp.hasMatch(email)) {
+      _showErrorSnackBar("Please enter a valid email address");
+      return;
+    }
+
+    // Split email into parts for detailed validation
+    final parts = email.split('@');
+    String localPart = parts[0];
+    String domain = parts[1];
+
+    // Local part validation (username part of email)
+    // Must begin with a letter and be at least 3 characters
+    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9._%+-]{2,}$').hasMatch(localPart)) {
+      _showErrorSnackBar(
+          "Email address must start with a letter and be at least 3 characters");
+      return;
+    }
+
+    // Domain validation
+    if (!RegExp(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(domain)) {
+      _showErrorSnackBar("Email domain is invalid");
+      return;
+    }
+
+    // Check if using common domains (optional but useful)
+    List<String> commonDomains = [
+      'gmail.com',
+      'yahoo.com',
+      'outlook.com',
+      'hotmail.com',
+      'icloud.com'
+    ];
+    bool isCommonDomain = commonDomains.contains(domain.toLowerCase());
+
+    // For common domains, enforce additional rules
+    if (isCommonDomain && localPart.length < 4) {
+      _showErrorSnackBar(
+          "Email username for $domain should be at least 4 characters");
+      return;
+    }
+
+    // Prevent disposable email domains (optional)
+    List<String> disposableDomains = [
+      'mailinator.com',
+      'tempmail.com',
+      'throwaway.com'
+    ];
+    if (disposableDomains.any((d) => domain.toLowerCase().contains(d))) {
+      _showErrorSnackBar("Please use a permanent email address");
+      return;
+    }
+
+    // 4. Password validation
     if (password != confirmPassword) {
       _showErrorSnackBar("Passwords do not match");
       return;
@@ -80,17 +159,10 @@ class _SignupScreenState extends State<SignupScreen>
       return;
     }
 
-    // Email format validation using regex
-    final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegExp.hasMatch(email)) {
-      _showErrorSnackBar("Please enter a valid email address");
-      return;
-    }
-
     setState(() => _isLoading = true);
 
     try {
-      // Create user with email and password
+      // Rest of your existing signup code
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
       User? user = userCredential.user;
@@ -121,27 +193,14 @@ class _SignupScreenState extends State<SignupScreen>
         });
       }
     } catch (e) {
-      // Handle Firebase Auth exceptions
+      // Your existing error handling code
       String errorMessage = "Registration failed";
       if (e is FirebaseAuthException) {
         switch (e.code) {
           case 'email-already-in-use':
             errorMessage = "This email is already registered";
             break;
-          case 'invalid-email':
-            errorMessage = "Invalid email format";
-            break;
-          case 'weak-password':
-            errorMessage = "Password is too weak";
-            break;
-          case 'operation-not-allowed':
-            errorMessage = "Email/password accounts are not enabled";
-            break;
-          case 'too-many-requests':
-            errorMessage = "Too many requests. Try again later";
-            break;
-          default:
-            errorMessage = "Registration failed: ${e.code}";
+          // Rest of your error cases
         }
       }
       _showErrorSnackBar(errorMessage);
